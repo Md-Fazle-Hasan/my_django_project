@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        form { background: #f4f4f4; padding: 20px; border-radius: 5px; max-width: 500px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-weight: bold; margin-bottom: 4px; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        th { background: #333; color: #fff; }
+        .btn { padding: 8px 12px; background: #28a745; color: white; border: none; cursor: pointer; }
+        .btn-edit { background: #007bff; color: white; text-decoration: none; padding: 4px 8px; border-radius: 3px; }
+        .btn-delete { background: #dc3545; color: white; text-decoration: none; padding: 4px 8px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+    <h1>Create New Order</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Business</label>
+            <select name="business_id" required>
+                {% for b in businesses %}
+                    <option value="{{ b.business_id }}">{{ b.business_name }}</option>
+                {% empty %}
+                    <option value="">No businesses available (Add via /admin)</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Customer</label>
+            <select name="customer_id" required>
+                {% for c in customers %}
+                    <option value="{{ c.customer_id }}">{{ c.name }}</option>
+                {% empty %}
+                    <option value="">No customers available (Add via /admin)</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" name="product_name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Size</label>
+            <input type="text" name="size" placeholder="e.g. M, L, XL">
+        </div>
+
+        <div class="form-group">
+            <label>Color</label>
+            <input type="text" name="color">
+        </div>
+
+        <div class="form-group">
+            <label>Quantity</label>
+            <input type="number" name="quantity" value="1" min="1" required>
+        </div>
+
+        <div class="form-group">
+            <label>Unit Price ($)</label>
+            <input type="number" step="0.01" name="unit_price" required>
+        </div>
+
+        <button type="submit" class="btn">Create Order</button>
+    </form>
+
+    <hr style="margin-top: 40px;">
+
+    <h2>Order List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Order #</th>
+                <th>Business</th>
+                <th>Customer</th>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>#{{ order.order_id }}</td>
+                <td>{{ order.business.business_name }}</td>
+                <td>{{ order.customer.name }}</td>
+                <td>{{ order.product_name }} ({% if order.size %}{{ order.size }}{% endif %}{% if order.color %}, {{ order.color }}{% endif %})</td>
+                <td>{{ order.quantity }}</td>
+                <td>${{ order.unit_price }}</td>
+                <td><strong>${{ order.total_amount }}</strong></td>
+                <td>{{ order.status }}</td>
+                <td>
+                    <a href="{% url 'order_update' order.pk %}" class="btn-edit">Edit</a>
+                    <a href="{% url 'order_delete' order.pk %}" class="btn-delete">Delete</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9">No orders created yet. Submit the form above to add one!</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
