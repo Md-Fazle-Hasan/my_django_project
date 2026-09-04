@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Business, Customer, Order
 
+
 def index(request):
     if request.method == 'POST':
         business_id = request.POST.get('business_id')
@@ -8,10 +9,15 @@ def index(request):
         product_name = request.POST.get('product_name')
         size = request.POST.get('size')
         color = request.POST.get('color')
-        quantity = int(request.POST.get('quantity', 1))
-        unit_price = float(request.POST.get('unit_price', 0.0))
+        
+        # Safely parse numeric inputs
+        raw_quantity = request.POST.get('quantity')
+        quantity = int(raw_quantity) if raw_quantity else 1
 
-        # Do NOT pass total_amount; MySQL handles the generated column automatically
+        raw_price = request.POST.get('unit_price')
+        unit_price = float(raw_price) if raw_price else 0.0
+
+        # MySQL calculates total_amount automatically as a generated column
         Order.objects.create(
             business_id=business_id,
             customer_id=customer_id,
@@ -43,12 +49,17 @@ def order_update(request, pk):
         order.product_name = request.POST.get('product_name')
         order.size = request.POST.get('size')
         order.color = request.POST.get('color')
-        order.quantity = int(request.POST.get('quantity', 1))
-        order.unit_price = float(request.POST.get('unit_price', 0.0))
+
+        raw_quantity = request.POST.get('quantity')
+        order.quantity = int(raw_quantity) if raw_quantity else 1
+
+        raw_price = request.POST.get('unit_price')
+        order.unit_price = float(raw_price) if raw_price else 0.0
+
         order.status = request.POST.get('status', order.status)
         
-        # Save order fields (excluding total_amount)
-        order.save()
+        # Explicitly list only mutable fields so MySQL can generate total_amount natively
+        order.save(update_fields=['product_name', 'size', 'color', 'quantity', 'unit_price', 'status'])
         return redirect('index')
 
     context = {

@@ -83,15 +83,12 @@ class Order(models.Model):
     class Meta:
         db_table = 'orders'
 
-    def __str__(self):
-        return f"Order #{self.order_id} - {self.product_name}"
-
-    class Meta:
-        db_table = 'orders'
-
     def save(self, *args, **kwargs):
-        # Automatically calculate total_amount before saving to DB
-        self.total_amount = self.quantity * self.unit_price
+        # Exclude generated column from UPDATE queries if update_fields is passed
+        if self.pk:
+            kwargs['update_fields'] = [
+                'product_name', 'size', 'color', 'quantity', 'unit_price', 'status'
+            ]
         super().save(*args, **kwargs)
 
     def __str__(self):
