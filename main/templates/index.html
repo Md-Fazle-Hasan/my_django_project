@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Messenger Business Automation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f8f9fa; }
+        h1, h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; background: white; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; background: #eee; }
+    </style>
+</head>
+<body>
+
+    <h1>Messenger Business System Dashboard</h1>
+
+    <h2> Registered Businesses</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Business Name</th>
+            <th>Owner</th>
+            <th>Email</th>
+            <th>Phone</th>
+        </tr>
+        {% for b in businesses %}
+        <tr>
+            <td>{{ b.business_id }}</td>
+            <td><strong>{{ b.business_name }}</strong></td>
+            <td>{{ b.owner_name }}</td>
+            <td>{{ b.email }}</td>
+            <td>{{ b.phone }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5">No businesses found.</td></tr>
+        {% endfor %}
+    </table>
+    <!-- Insert Order Form -->
+<div style="background: #ffffff; padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+    <h2>Create New Order (Database Write Demo)</h2>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+            <div>
+                <label>Business:</label><br>
+                <select name="business_id" required style="width: 100%; padding: 8px; margin-top: 5px;">
+                    {% for b in businesses %}
+                        <option value="{{ b.business_id }}">{{ b.business_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Customer:</label><br>
+                <select name="customer_id" required style="width: 100%; padding: 8px; margin-top: 5px;">
+                    {% for c in customers %}
+                        <option value="{{ c.customer_id }}">{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label>Product Name:</label><br>
+                <input type="text" name="product_name" required placeholder="e.g. Leather Wallet" style="width: 95%; padding: 8px; margin-top: 5px;">
+            </div>
+            <div>
+                <label>Size / Color:</label><br>
+                <div style="display: flex; gap: 5px;">
+                    <input type="text" name="size" placeholder="Size (e.g. L)" style="width: 50%; padding: 8px; margin-top: 5px;">
+                    <input type="text" name="color" placeholder="Color" style="width: 50%; padding: 8px; margin-top: 5px;">
+                </div>
+            </div>
+            <div>
+                <label>Quantity:</label><br>
+                <input type="number" name="quantity" value="1" min="1" required style="width: 95%; padding: 8px; margin-top: 5px;">
+            </div>
+            <div>
+                <label>Unit Price (৳):</label><br>
+                <input type="number" step="0.01" name="unit_price" placeholder="1500" required style="width: 95%; padding: 8px; margin-top: 5px;">
+            </div>
+        </div>
+        <button type="submit" style="margin-top: 15px; padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">
+            + Save Order to MySQL
+        </button>
+    </form>
+</div>
+
+    <h2> Recent Orders</h2>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Business</th>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+        </tr>
+        {% for o in orders %}
+        <tr>
+            <td>#{{ o.order_id }}</td>
+            <td>{{ o.business.business_name }}</td>
+            <td>{{ o.customer.name }}</td>
+            <td>{{ o.product_name }} ({{ o.size }}/{{ o.color }})</td>
+            <td>{{ o.quantity }}</td>
+            <td>৳{{ o.unit_price }}</td>
+            <td><strong>৳{{ o.total_amount }}</strong></td>
+            <td><span class="badge">{{ o.status }}</span></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="8">No orders found.</td></tr>
+        {% endfor %}
+    </table>
+
+</body>
+</html>
