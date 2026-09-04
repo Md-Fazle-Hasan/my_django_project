@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Order</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .card { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 20px; border-radius: 5px; max-width: 500px; }
+        .btn-delete { padding: 8px 12px; background: #dc3545; color: white; border: none; cursor: pointer; }
+        .btn-cancel { padding: 8px 12px; background: #6c757d; color: white; text-decoration: none; border-radius: 3px; display: inline-block; margin-left: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Confirm Delete</h2>
+        <p>Are you sure you want to delete order <strong>#{{ order.order_id }} ({{ order.product_name }})</strong>?</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">Delete Permanently</button>
+            <a href="{% url 'index' %}" class="btn-cancel">Cancel</a>
+        </form>
+    </div>
+
+</body>
+</html>
