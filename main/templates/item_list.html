@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Django CRUD App</title>
+</head>
+<body>
+    <h2>Add New Item</h2>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Item</button>
+    </form>
+
+    <hr>
+
+    <h2>Items List</h2>
+    <ul>
+        {% for item in items %}
+            <li>
+                <strong>{{ item.title }}</strong> - {{ item.description }}
+                <a href="{% url 'item_update' item.pk %}">Edit</a> | 
+                <a href="{% url 'item_delete' item.pk %}">Delete</a>
+            </li>
+        {% empty %}
+            <li>No items found. Add one above!</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
