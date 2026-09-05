@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora - Add Product</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex">
+
+    <!-- Dark Sidebar -->
+    <aside class="w-64 bg-[#0b0f19] text-slate-300 flex flex-col p-6 min-h-screen">
+        <div class="mb-10">
+            <h1 class="text-2xl font-bold text-white tracking-wider">NEXORA</h1>
+            <p class="text-xs text-slate-400">Business Automation</p>
+        </div>
+
+        <nav class="space-y-2 flex-1">
+            <a href="{% url 'dashboard' %}" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'add_product' %}" class="flex items-center space-x-3 px-4 py-3 bg-blue-600 text-white rounded-xl font-medium">
+                <span>Inventory</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Customers</span>
+            </a>
+            <a href="{% url 'index' %}" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Orders</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Settings</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="flex-1 p-10">
+        <div class="mb-8">
+            <h2 class="text-3xl font-bold text-slate-900">Add product to inventory</h2>
+            <p class="text-sm text-slate-500">Give the AI accurate product information so it can answer customers correctly.</p>
+        </div>
+
+        <div class="grid grid-cols-3 gap-8">
+            <!-- Product Creation Form -->
+            <form method="POST" enctype="multipart/form-data" action="{% url 'add_product' %}" 
+                  class="col-span-2 bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-6">
+                {% csrf_token %}
+                
+                <h3 class="text-lg font-bold text-slate-900">Product information</h3>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-2">Product name</label>
+                    {{ form.name }}
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-2">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">Product image</label>
+                        <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center bg-slate-50">
+                            {{ form.image }}
+                            <p class="text-xs text-slate-400 mt-2">JPG, PNG up to 10 MB</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">SKU</label>
+                        {{ form.sku }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">Price (BDT)</label>
+                        {{ form.price }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">Stock quantity</label>
+                        {{ form.stock_quantity }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">Size</label>
+                        {{ form.size }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-2">Color</label>
+                        {{ form.color }}
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-4 pt-4 border-t border-slate-100">
+                    <a href="{% url 'dashboard' %}" class="px-6 py-3 border border-slate-200 text-slate-700 rounded-xl font-medium text-sm hover:bg-slate-50 transition">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition">
+                        Save product
+                    </button>
+                </div>
+            </form>
+
+            <!-- AI Status Info Side Box -->
+            <div class="space-y-6">
+                <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+                    <h4 class="font-bold text-slate-900 text-sm mb-3">AI will use this data</h4>
+                    <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside">
+                        <li>Check stock availability</li>
+                        <li>Answer price & variant questions</li>
+                        <li>Match customer product images</li>
+                        <li>Update order details</li>
+                    </ul>
+                </div>
+
+                <div class="bg-emerald-50 text-emerald-700 text-xs font-semibold p-4 rounded-xl flex items-center justify-center space-x-2">
+                    <span>✓ Connected to MySQL</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>

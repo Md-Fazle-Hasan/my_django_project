@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexora - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex">
+
+    <!-- Dark Sidebar -->
+    <aside class="w-64 bg-[#0b0f19] text-slate-300 flex flex-col p-6 min-h-screen">
+        <div class="mb-10">
+            <h1 class="text-2xl font-bold text-white tracking-wider">NEXORA</h1>
+            <p class="text-xs text-slate-400">Business Automation</p>
+        </div>
+
+        <nav class="space-y-2 flex-1">
+            <a href="{% url 'dashboard' %}" class="flex items-center space-x-3 px-4 py-3 bg-blue-600 text-white rounded-xl font-medium">
+                <span>Dashboard</span>
+            </a>
+            <a href="{% url 'add_product' %}" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Inventory</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Customers</span>
+            </a>
+            <a href="{% url 'index' %}" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Orders</span>
+            </a>
+            <a href="#" class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-800 rounded-xl transition">
+                <span>Settings</span>
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-10">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900">Good morning, Rahim</h2>
+                <p class="text-sm text-slate-500">Here is what is happening with your business today.</p>
+            </div>
+            <a href="{% url 'add_product' %}" class="px-5 py-3 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition">
+                + Add Product
+            </a>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="grid grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl border-2 border-blue-500 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500">New Orders</p>
+                <p class="text-3xl font-bold text-slate-900 mt-2">{{ new_orders_count }}</p>
+                <p class="text-xs text-blue-600 mt-2">+12% today</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500">Processing</p>
+                <p class="text-3xl font-bold text-slate-900 mt-2">{{ processing_count }}</p>
+                <p class="text-xs text-amber-500 mt-2">6 ready soon</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500">Delivered</p>
+                <p class="text-3xl font-bold text-slate-900 mt-2">{{ delivered_count }}</p>
+                <p class="text-xs text-emerald-600 mt-2">+8% this week</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <p class="text-xs font-semibold text-slate-500">Low Stock</p>
+                <p class="text-3xl font-bold text-slate-900 mt-2">{{ low_stock_count }}</p>
+                <p class="text-xs text-rose-500 mt-2">Needs attention</p>
+            </div>
+        </div>
+
+        <!-- Recent Orders Table Section -->
+        <div class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-lg font-bold text-slate-900">Recent orders</h3>
+                <a href="{% url 'index' %}" class="text-xs text-blue-600 font-semibold hover:underline">View all →</a>
+            </div>
+
+            <table class="w-full text-left text-sm text-slate-600">
+                <thead>
+                    <tr class="text-xs text-slate-400 border-b border-slate-100">
+                        <th class="pb-3 font-semibold">Order</th>
+                        <th class="pb-3 font-semibold">Customer</th>
+                        <th class="pb-3 font-semibold">Product</th>
+                        <th class="pb-3 font-semibold">Amount</th>
+                        <th class="pb-3 font-semibold">Status</th>
+                        <th class="pb-3 font-semibold">Delivery</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for order in recent_orders %}
+                    <tr>
+                        <td class="py-4 font-bold text-slate-900">#{{ order.order_id }}</td>
+                        <td class="py-4">{{ order.customer.name }}</td>
+                        <td class="py-4">{{ order.product_name }} ×{{ order.quantity }}</td>
+                        <td class="py-4 font-bold text-slate-900">৳{{ order.total_amount }}</td>
+                        <td class="py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-semibold 
+                                {% if order.status == 'NEW' %}bg-amber-100 text-amber-700
+                                {% elif order.status == 'DELIVERED' %}bg-emerald-100 text-emerald-700
+                                {% else %}bg-blue-100 text-blue-700{% endif %}">
+                                {{ order.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="py-4 text-xs text-slate-400">{{ order.delivery_status }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="py-6 text-center text-slate-400">No recent orders found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+</body>
+</html>

@@ -38,6 +38,33 @@ class User(models.Model):
         return f"{self.name} ({self.role})"
 
 
+class Product(models.Model):
+    SIZE_CHOICES = [
+        ('S', 'Small'),
+        ('M', 'Medium'),
+        ('L', 'Large'),
+        ('XL', 'Extra Large'),
+    ]
+
+    product_id = models.AutoField(primary_key=True)
+    business = models.ForeignKey(Business, on_delete=models.CASCADE, db_column='business_id', null=True, blank=True)
+    name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    sku = models.CharField(max_length=50, unique=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    stock_quantity = models.PositiveIntegerField(default=0)
+    size = models.CharField(max_length=10, choices=SIZE_CHOICES, default='M')
+    color = models.CharField(max_length=50, blank=True, null=True)
+    image = models.ImageField(upload_to='products/', blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'products'
+
+    def __str__(self):
+        return f"{self.name} ({self.sku})"
+
+
 class Customer(models.Model):
     customer_id = models.AutoField(primary_key=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, db_column='business_id')
@@ -68,26 +95,26 @@ class Order(models.Model):
     order_id = models.AutoField(primary_key=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, db_column='business_id')
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, db_column='customer_id')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True)
     product_name = models.CharField(max_length=150)
     size = models.CharField(max_length=50, blank=True, null=True)
     color = models.CharField(max_length=50, blank=True, null=True)
     quantity = models.IntegerField(default=1)
     unit_price = models.DecimalField(max_digits=10, decimal_places=2)
     
-    # Read-only field mapped to MySQL generated column
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='NEW')
+    delivery_status = models.CharField(max_length=100, default='Preparing')
     order_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'orders'
 
     def save(self, *args, **kwargs):
-        # Exclude generated column from UPDATE queries if update_fields is passed
         if self.pk:
             kwargs['update_fields'] = [
-                'product_name', 'size', 'color', 'quantity', 'unit_price', 'status'
+                'product_name', 'size', 'color', 'quantity', 'unit_price', 'status', 'delivery_status'
             ]
         super().save(*args, **kwargs)
 
